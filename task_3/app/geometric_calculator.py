@@ -1,12 +1,9 @@
 """The module contains the calculator interface function."""
-
-from math import pi
 import tkinter as tk
 from tkinter import messagebox
 from tkinter.ttk import Combobox
-from typing import Tuple, NoReturn, Any, List
+from typing import NoReturn
 import matplotlib.pyplot as plt
-import numpy as np
 
 from task_3.app.figure import (
     Circle,
@@ -22,6 +19,8 @@ from task_3.app.figure import (
     Cylinder,
     Cone,
 )
+
+from task_3.app.renderer_figures import RendererFlatFigures, RendererVolumeFigures
 
 
 def flat_click(case) -> NoReturn:
@@ -102,6 +101,11 @@ def volume_click(case) -> NoReturn:
     entry_3.pack_forget()
     draw_btn.pack_forget()
 
+    if volume_box.get() == "Сфера":
+        label_1["text"] = "Введите радиус r"
+
+        entry_1.pack(side="left", anchor="nw", padx=14, pady=20)
+
     if volume_box.get() == "Куб":
         label_1["text"] = "Введите сторону a"
 
@@ -125,19 +129,14 @@ def volume_click(case) -> NoReturn:
         entry_2.pack(side="left", anchor="nw", padx=0, pady=20)
         entry_3.pack(side="left", anchor="nw", padx=20, pady=20)
 
-    if volume_box.get() == "Сфера":
-        label_1["text"] = "Введите радиус r"
-
-        entry_1.pack(side="left", anchor="nw", padx=14, pady=20)
-
-    if volume_box.get() == "Конус":
+    if volume_box.get() == "Цилиндр":
         label_1["text"] = "Введите радиус r"
         label_2["text"] = "Введите высоту h"
 
         entry_1.pack(side="left", anchor="nw", padx=14, pady=20)
         entry_2.pack(side="left", anchor="nw", padx=11, pady=20)
 
-    if volume_box.get() == "Цилиндр":
+    if volume_box.get() == "Конус":
         label_1["text"] = "Введите радиус r"
         label_2["text"] = "Введите высоту h"
 
@@ -159,15 +158,11 @@ def click() -> NoReturn:
             r: float = float(entry_data_1)
 
             circle: Circle = Circle(r)
-            calc_label_1["text"] = f"Площадь круга: {circle.area()}"
-            calc_label_2["text"] = f"Периметр круга: {circle.perimeter()}"
+            calc_label_1["text"] = f"Площадь круга: {circle.area}"
+            calc_label_2["text"] = f"Периметр круга: {circle.perimeter}"
 
-            plot_circle = plt.Circle((0, 0), r, color="green", fill=False)
-            ax: Any = plt.gca()
-            ax.cla()
-            ax.set_xlim((-r, r))
-            ax.set_ylim((-r, r))
-            ax.add_patch(plot_circle)
+            RendererFlatFigures.get_plot_circle(r)
+
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -176,15 +171,11 @@ def click() -> NoReturn:
         try:
             a: float = float(entry_data_1)
             square: Square = Square(a)
-            calc_label_1["text"] = f"Площадь квадрата: {square.area()}"
-            calc_label_2["text"] = f"Периметр квадрата: {square.perimeter()}"
+            calc_label_1["text"] = f"Площадь квадрата: {square.area}"
+            calc_label_2["text"] = f"Периметр квадрата: {square.perimeter}"
 
-            plot_square = plt.Rectangle((0, 0), a, a, color="green", fill=False)
-            ax: Any = plt.gca()
-            ax.cla()
-            ax.set_xlim((0, a))
-            ax.set_ylim((0, a))
-            ax.add_patch(plot_square)
+            RendererFlatFigures.get_plot_square(a)
+
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -194,15 +185,11 @@ def click() -> NoReturn:
             a: float = float(entry_data_1)
             b: float = float(entry_data_2)
             rectangle: Rectangle = Rectangle(a, b)
-            calc_label_1["text"] = f"Площадь прямоугольника: {rectangle.area()}"
-            calc_label_2["text"] = f"Периметр прямоугольника: {rectangle.perimeter()}"
+            calc_label_1["text"] = f"Площадь прямоугольника: {rectangle.area}"
+            calc_label_2["text"] = f"Периметр прямоугольника: {rectangle.perimeter}"
 
-            plot_rectangle = plt.Rectangle((0, 0), a, b, color="green", fill=False)
-            ax: Any = plt.gca()
-            ax.cla()
-            ax.set_xlim((-20, 20))
-            ax.set_ylim((-20, 20))
-            ax.add_patch(plot_rectangle)
+            RendererFlatFigures.get_plot_rectangle(a, b)
+
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -213,21 +200,16 @@ def click() -> NoReturn:
             b: float = float(entry_data_2)
             c: float = float(entry_data_3)
             triangle: Triangle = Triangle(a, b, c)
-            calc_label_1["text"] = f"Площадь треугольника: {triangle.area()}"
-            calc_label_2["text"] = f"Периметр треугольника: {triangle.perimeter()}"
+            calc_label_1["text"] = f"Площадь треугольника: {triangle.area}"
+            calc_label_2["text"] = f"Периметр треугольника: {triangle.perimeter}"
 
-            x: float = (a**2 + b**2 - c**2) / (2 * a)
-            y: float = (b**2 - x**2) ** (1 / 2)
+            RendererFlatFigures.get_plot_triangle(a, b, c)
 
-            points: Tuple[List[float, float], ...] = ([0, 0], [a, 0], [x, y])
-            plot_triangle = plt.Polygon(points, color="green", fill=False)
-            ax: Any = plt.gca()
-            ax.cla()
-            ax.set_xlim((-20, 20))
-            ax.set_ylim((-20, 20))
-            ax.add_patch(plot_triangle)
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
+            return
+        except AttributeError:
+            messagebox.showinfo("Ошибка!", "Такой треугольник не существует!")
             return
 
     if flat_box.get() == "Трапеция":
@@ -236,21 +218,11 @@ def click() -> NoReturn:
             b: float = float(entry_data_2)
             h: float = float(entry_data_3)
             trapezoid: Trapezoid = Trapezoid(a, b, h)
-            calc_label_1["text"] = f"Площадь трапеции: {trapezoid.area()}"
-            calc_label_2["text"] = f"Средняя линия: {trapezoid.middle_line()}"
+            calc_label_1["text"] = f"Площадь трапеции: {trapezoid.area}"
+            calc_label_2["text"] = f"Средняя линия: {trapezoid.middle_line}"
 
-            points: Tuple[List[float, float], ...] = (
-                [0, 0],
-                [a, 0],
-                [a / 2 + b / 2, h],
-                [a / 2 - b / 2, h],
-            )
-            plot_trapezoid = plt.Polygon(points, color="green", fill=False)
-            ax: Any = plt.gca()
-            ax.cla()
-            ax.set_xlim((-20, 20))
-            ax.set_ylim((-20, 20))
-            ax.add_patch(plot_trapezoid)
+            RendererFlatFigures.get_plot_trapezoid(a, b, h)
+
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -260,21 +232,11 @@ def click() -> NoReturn:
             a: float = float(entry_data_1)
             h: float = float(entry_data_2)
             rhombus: Rhombus = Rhombus(a, h)
-            calc_label_1["text"] = f"Площадь ромба: {rhombus.area()}"
-            calc_label_2["text"] = f"Периметр ромба: {rhombus.perimeter()}"
+            calc_label_1["text"] = f"Площадь ромба: {rhombus.area}"
+            calc_label_2["text"] = f"Периметр ромба: {rhombus.perimeter}"
 
-            points: Tuple[List[float, float], ...] = (
-                [0, 0],
-                [a, 0],
-                [a + (a**2 - h**2) ** (1 / 2), h],
-                [(a**2 - h**2) ** (1 / 2), h],
-            )
-            plot_rhombus = plt.Polygon(points, color="green", fill=False)
-            ax: Any = plt.gca()
-            ax.cla()
-            ax.set_xlim((-20, 20))
-            ax.set_ylim((-20, 20))
-            ax.add_patch(plot_rhombus)
+            RendererFlatFigures.get_plot_rhombus(a, h)
+
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -283,19 +245,11 @@ def click() -> NoReturn:
         try:
             r: float = float(entry_data_1)
             sphere: Sphere = Sphere(r)
-            calc_label_1["text"] = f"Площадь сферы: {sphere.area()}"
-            calc_label_2["text"] = f"Объем сферы: {sphere.volume()}"
+            calc_label_1["text"] = f"Площадь сферы: {sphere.area}"
+            calc_label_2["text"] = f"Объем сферы: {sphere.volume}"
 
-            u: Any = np.linspace(0, 2 * pi, 100)
-            v: Any = np.linspace(0, pi, 100)
+            RendererVolumeFigures.get_plot_sphere(r)
 
-            x: float = r * np.outer(np.cos(u), np.sin(v))
-            y: float = r * np.outer(np.sin(u), np.sin(v))
-            z: float = r * np.outer(np.ones(np.size(u)), np.cos(v))
-
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection="3d")
-            ax.plot_surface(x, y, z, color="green")
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -304,14 +258,11 @@ def click() -> NoReturn:
         try:
             a: int = int(entry_data_1)
             cube: Cube = Cube(a)
-            calc_label_1["text"] = f"Площадь куба: {cube.area()}"
-            calc_label_2["text"] = f"Объем куба: {cube.volume()}"
+            calc_label_1["text"] = f"Площадь куба: {cube.area}"
+            calc_label_2["text"] = f"Объем куба: {cube.volume}"
 
-            axes: List[int] = [a, a, a]
-            data: Any = np.ones(axes, dtype=np.bool)
-            fig: Any = plt.figure()
-            ax: Any = fig.add_subplot(111, projection="3d")
-            ax.voxels(data, facecolors="green")
+            RendererVolumeFigures.get_plot_cube(a)
+
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -322,14 +273,11 @@ def click() -> NoReturn:
             b: int = int(entry_data_2)
             c: int = int(entry_data_3)
             parallelepiped: Parallelepiped = Parallelepiped(a, b, c)
-            calc_label_1["text"] = f"Площадь параллелепипеда: {parallelepiped.area()}"
-            calc_label_2["text"] = f"Объем параллелепипеда: {parallelepiped.volume()}"
+            calc_label_1["text"] = f"Площадь параллелепипеда: {parallelepiped.area}"
+            calc_label_2["text"] = f"Объем параллелепипеда: {parallelepiped.volume}"
 
-            axes: List[int] = [a, b, c]
-            data: Any = np.ones(axes, dtype=np.bool)
-            fig: Any = plt.figure()
-            ax: Any = fig.add_subplot(111, projection="3d")
-            ax.voxels(data, facecolors="green")
+            RendererVolumeFigures.get_plot_parallelepiped(a, b, c)
+
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -340,26 +288,11 @@ def click() -> NoReturn:
             h: float = float(entry_data_2)
             n: int = int(entry_data_3)
             pyramid: Pyramid = Pyramid(a, h, n)
-            calc_label_1["text"] = f"Площадь пирамиды: {pyramid.area()}"
-            calc_label_2["text"] = f"Объем пирамиды: {pyramid.volume()}"
+            calc_label_1["text"] = f"Площадь пирамиды: {pyramid.area}"
+            calc_label_2["text"] = f"Объем пирамиды: {pyramid.volume}"
 
-            r: float = a / (2 * np.sin(pi / n))
-            X: List[float] = []
-            Y: List[float] = []
-            Z: Any = np.zeros(n + 1)
-            Z[n] = h
+            RendererVolumeFigures.get_plot_pyramid(a, h, n)
 
-            for i in range(0, n):
-                x: float = r * np.cos((2 * pi * i) / n)
-                y: float = r * np.sin((2 * pi * i) / n)
-                X.append(x)
-                Y.append(y)
-
-            X.append(0)
-            Y.append(0)
-            fig: Any = plt.figure()
-            ax: Any = fig.add_subplot(111, projection="3d")
-            ax.plot_trisurf(X, Y, Z, color="green")
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -369,19 +302,11 @@ def click() -> NoReturn:
             r: float = float(entry_data_1)
             h: float = float(entry_data_2)
             cylinder: Cylinder = Cylinder(r, h)
-            calc_label_1["text"] = f"Площадь цилиндра: {cylinder.area()}"
-            calc_label_2["text"] = f"Объем цилиндра: {cylinder.volume()}"
+            calc_label_1["text"] = f"Площадь цилиндра: {cylinder.area}"
+            calc_label_2["text"] = f"Объем цилиндра: {cylinder.volume}"
 
-            u: Any = np.linspace(0, 2 * pi, 50)
-            height: Any = np.linspace(0, h, 20)
+            RendererVolumeFigures.get_plot_cylinder(r, h)
 
-            x: float = r * np.outer(np.sin(u), np.ones(np.size(height)))
-            y: float = r * np.outer(np.cos(u), np.ones(np.size(height)))
-            z: float = np.outer(np.ones(np.size(u)), height)
-
-            fig: Any = plt.figure()
-            ax: Any = fig.add_subplot(111, projection="3d")
-            ax.plot_surface(x, y, z, color="green")
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return
@@ -391,22 +316,11 @@ def click() -> NoReturn:
             r: float = float(entry_data_1)
             h: float = float(entry_data_2)
             cone: Cone = Cone(r, h)
-            calc_label_1["text"] = f"Площадь конуса: {cone.area()}"
-            calc_label_2["text"] = f"Объем конуса: {cone.volume()}"
+            calc_label_1["text"] = f"Площадь конуса: {cone.area}"
+            calc_label_2["text"] = f"Объем конуса: {cone.volume}"
 
-            theta: Any = np.linspace(0, 2 * pi, 90)
-            radius: Any = np.linspace(0, r, 50)
-            T, R = np.meshgrid(theta, radius)
+            RendererVolumeFigures.get_plot_cone(r, h)
 
-            x: float = R * np.cos(T)
-            y: float = R * np.sin(T)
-            z: float = np.sqrt(x**2 + y**2) * (h / r)
-
-            fig: Any = plt.figure()
-            ax: Any = fig.add_subplot(111, projection="3d")
-            ax.plot_surface(x, y, z, color="green")
-
-            ax.invert_zaxis()
         except ValueError:
             messagebox.showinfo("Ошибка!", "Введите положительное число!")
             return

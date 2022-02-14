@@ -8,6 +8,12 @@ class Figure:
 
     title = "Фигура"
 
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            if value <= 0:
+                raise ValueError("Parameters can't be negative")
+            setattr(self, key, value)
+
     def area(self):
         raise NotImplementedError("Abstract figure. Area is not defined.")
 
@@ -50,15 +56,21 @@ class Circle(FlatFigure):
     title = "Круг"
 
     def __init__(self, r):
-        self.r = r
-        if self.r <= 0:
-            raise ValueError
+        super().__init__(r=r)
 
+    @property
     def perimeter(self):
         return 2 * math.pi * self.r
 
+    @property
     def area(self):
         return math.pi * self.r**2
+
+    def __str__(self):
+        return (
+            f'{self.figure_name()}'
+            f'radius r'
+        )
 
 
 class Square(FlatFigure):
@@ -71,13 +83,13 @@ class Square(FlatFigure):
     title = "Квадрат"
 
     def __init__(self, a):
-        self.a = a
-        if self.a <= 0:
-            raise ValueError
+        super().__init__(a=a)
 
+    @property
     def perimeter(self):
         return 4 * self.a
 
+    @property
     def area(self):
         return self.a**2
 
@@ -93,14 +105,13 @@ class Rectangle(FlatFigure):
     title = "Прямоугольник"
 
     def __init__(self, a, b):
-        self.a = a
-        self.b = b
-        if self.a <= 0 or self.b <= 0:
-            raise ValueError
+        super().__init__(a=a, b=b)
 
+    @property
     def perimeter(self):
         return 2 * (self.a + self.b)
 
+    @property
     def area(self):
         return self.a * self.b
 
@@ -117,17 +128,17 @@ class Triangle(FlatFigure):
     title = "Треугольник"
 
     def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
-        if self.a <= 0 or self.b <= 0 or self.c <= 0:
-            raise ValueError
+        super().__init__(a=a, b=b, c=c)
+        if a + b <= c or a + c <= b or b + c <= a:
+            raise AttributeError("Triangle does not exist")
 
+    @property
     def perimeter(self):
         return self.a + self.b + self.c
 
+    @property
     def area(self):
-        p = self.perimeter()
+        p = self.perimeter
         return math.sqrt(p * (p - self.a) * (p - self.b) * (p - self.c))
 
 
@@ -143,18 +154,17 @@ class Trapezoid(FlatFigure):
     title = "Трапеция"
 
     def __init__(self, a, b, h):
-        self.a = a
-        self.b = b
-        self.h = h
-        if self.a <= 0 or self.b <= 0 or self.h <= 0:
-            raise ValueError
+        super().__init__(a=a, b=b, h=h)
 
+    @property
     def perimeter(self):
         pass
 
+    @property
     def middle_line(self):
         return (self.a + self.b) / 2
 
+    @property
     def area(self):
         return ((self.a + self.b) / 2) * self.h
 
@@ -170,14 +180,13 @@ class Rhombus(FlatFigure):
     title = "Ромб"
 
     def __init__(self, a, h):
-        self.a = a
-        self.h = h
-        if self.a <= 0 or self.h <= 0:
-            raise ValueError
+        super().__init__(a=a, h=h)
 
+    @property
     def perimeter(self):
         return 4 * self.a
 
+    @property
     def area(self):
         return self.a * self.h
 
@@ -192,13 +201,13 @@ class Sphere(VolumetricFigure):
     title = "Сфера"
 
     def __init__(self, r):
-        self.r = r
-        if self.r <= 0:
-            raise ValueError
+        super().__init__(r=r)
 
+    @property
     def area(self):
         return 4 * math.pi * self.r**2
 
+    @property
     def volume(self):
         return 4 / 3 * math.pi * self.r**3
 
@@ -207,19 +216,19 @@ class Cube(VolumetricFigure):
     """
     This class describes cube.
 
-    :param float a: side length of the cube
+    :param int a: side length of the cube
     """
 
     title = "Куб"
 
     def __init__(self, a):
-        self.a = a
-        if self.a <= 0:
-            raise ValueError
+        super().__init__(a=a)
 
+    @property
     def area(self):
-        return 6**self.a**2
+        return 6*self.a**2
 
+    @property
     def volume(self):
         return self.a**3
 
@@ -228,23 +237,21 @@ class Parallelepiped(VolumetricFigure):
     """
     This class describes rectangular parallelepiped.
 
-    :param float a: side length of the rectangular parallelepiped
-    :param float b: side length of the rectangular parallelepiped
-    :param float с: side length of the rectangular parallelepiped
+    :param int a: side length of the rectangular parallelepiped
+    :param int b: side length of the rectangular parallelepiped
+    :param int с: side length of the rectangular parallelepiped
     """
 
     title = "Параллелепипед"
 
     def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
-        if self.a <= 0 or self.b <= 0 or self.c <= 0:
-            raise ValueError
+        super().__init__(a=a, b=b, c=c)
 
+    @property
     def area(self):
         return 2 * (self.a * self.b + self.a * self.c + self.b * self.c)
 
+    @property
     def volume(self):
         return self.a * self.b * self.c
 
@@ -255,18 +262,15 @@ class Pyramid(VolumetricFigure):
 
     :param float a: foundation side length of the right pyramid
     :param float h: length of the height of right pyramid
-    :param float n: the number of parties to the base of right pyramid
+    :param int n: the number of parties to the base of right pyramid
     """
 
     title = "Пирамида"
 
     def __init__(self, a, h, n):
-        self.a = a
-        self.h = h
-        self.n = n
-        if self.a <= 0 or self.h <= 0 or self.n <= 0:
-            raise ValueError
+        super().__init__(a=a, h=h, n=n)
 
+    @property
     def area(self):
         return (self.n * self.a / 2) * (
             (
@@ -277,6 +281,7 @@ class Pyramid(VolumetricFigure):
             )
         )
 
+    @property
     def volume(self):
         return (self.n * (self.a**2) * self.h) / 12 * math.tan(math.pi / self.n)
 
@@ -292,14 +297,13 @@ class Cylinder(VolumetricFigure):
     title = "Цилиндр"
 
     def __init__(self, r, h):
-        self.r = r
-        self.h = h
-        if self.r <= 0 or self.h <= 0:
-            raise ValueError
+        super().__init__(r=r, h=h)
 
+    @property
     def area(self):
         return 2 * math.pi * self.r * (self.r + self.h)
 
+    @property
     def volume(self):
         return math.pi * (self.r**2) * self.h
 
@@ -315,14 +319,13 @@ class Cone(VolumetricFigure):
     title = "Конус"
 
     def __init__(self, r, h):
-        self.r = r
-        self.h = h
-        if self.r <= 0 or self.h <= 0:
-            raise ValueError
+        super().__init__(r=r, h=h)
 
+    @property
     def area(self):
         g = (self.r**2 + self.h**2) ** (1 / 2)
         return math.pi * self.r * (self.r + g)
 
+    @property
     def volume(self):
         return 1 / 3 * math.pi * (self.r**2) * self.h
